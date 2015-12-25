@@ -74,9 +74,9 @@ void Print() {
 //FIN DE IMPLEMENTACION DE LA COLA
 
 
-struct linea{//Estructura utilizada para almacenar los datos del arreglo a utilizar con threads.
+typedef struct{//Estructura utilizada para almacenar los datos del arreglo a utilizar con threads.
 	char cadena[MAXLINE];
-	};
+}linea;
 
 
 void GetInput()
@@ -98,10 +98,47 @@ void Upper (char texto[MAXLINE])
 	printf("\n");
 } 
 
+void *spaces(void *parametro){
+	int i;
+	char line[MAXLINE];
+	strcpy(line,((linea *)parametro)->cadena);
+	char newline[MAXLINE];
+	for(i=0;i<=strlen(line);i++){
+		if(line[i]==' ') newline[i]='*';
+		else newline[i]=line[i];
+	}
+	//enviar nuevalinea a un thread upper
+	printf("%s", newline);
+	return NULL;
+}
+
+void *reader(void * nada){
+	char line[MAXLINE];
+	FILE *archivo;
+	archivo= fopen("unarchivo.txt","r");
+	if (archivo==NULL){
+		printf("el archivo \"unarchivo.txt\" no se encuentra en el directorio");
+		return NULL;
+    }
+	while(fgets(line, MAXLINE, archivo)!=NULL){
+        //aqui mandar la linea a un thread que la modifique
+        pthread_t threadid;
+		linea *parametro=(linea *)malloc(sizeof(linea));
+		strcpy(parametro->cadena,line);
+		pthread_create(&threadid, NULL, spaces, parametro);
+//        spaces(line);
+//        printf("%s", linea);
+    }
+	fclose(archivo);
+	return NULL;
+}
 
 int main (int argc, char *argv[])
 {
-	char str[MAXLINE] = "caca";
-	Upper(str);
-
+//	char str[MAXLINE] = "caca";
+//	Upper(str);
+	pthread_t threadid;
+	pthread_create(&threadid, NULL, reader, NULL);
+	
+	pthread_exit(NULL);
 }
