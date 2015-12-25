@@ -22,6 +22,9 @@ struct Node {
 	linea data;
 	struct Node* next;
 };
+
+pthread_mutex_t mutex; // MUTEX Global para que todos puedan acceder al mutex
+
 // Two glboal variables to store address of front and rear nodes. 
 struct Node* front = NULL;
 struct Node* rear = NULL;
@@ -131,14 +134,32 @@ void *reader(void * nada){
 		return NULL;
     }
 	while(fgets(line, MAXLINE, archivo)!=NULL){
+		
+		pthread_attr_t attr;
+	    void* ret;
+	    pthread_mutex_init(&mutex, NULL); // Inicializamos el mutex
+	    pthread_attr_init(&attr);
+	    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+
         //aqui mandar la linea a un thread que la modifique
         pthread_t threadid;
 		linea *parametro=(linea *)malloc(sizeof(linea));
 		strcpy(parametro->cadena,line);
 		pthread_create(&threadid, NULL, spaces, parametro);
+
+
+		pthread_join(threadid, &ret);
+	    pthread_attr_destroy(&attr); // Borramos de la memoria los atributos
+
+	    /* Antes de llamar a esta función TODOS los threads que usen el mutex
+      tienen que estar cerrados. */
+   		pthread_mutex_destroy(&mutex); // Desinicializa el mutex
+
+   		
+    }
+    pthread_exit(NULL);
 //        spaces(line);
 //        printf("%s", linea);
-    }
 	fclose(archivo);
 	return NULL;
 }
