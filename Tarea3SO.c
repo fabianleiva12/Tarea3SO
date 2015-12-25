@@ -121,7 +121,11 @@ void *spaces(void *parametro){
 		else newline[i]=line[i];
 	}
 	//enviar nuevalinea a un thread upper
-	printf("%s", newline);
+	pthread_t threadid;
+	linea *parameter=(linea *)malloc(sizeof(linea));
+	strcpy(parameter->cadena,newline);
+	pthread_create(&threadid, NULL, Upper, parameter);
+//	printf("%s", newline);
 	return NULL;
 }
 
