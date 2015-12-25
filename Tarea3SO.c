@@ -76,23 +76,36 @@ void Print() {
 
 //FIN DE IMPLEMENTACION DE LA COLA
 
-void Upper (char texto[MAXLINE]) 
-{ 
-	int i = 0;
-    while(texto[i]!='\0') 
-	{ 
-		texto[i]-=32; 
-		printf("%c",texto[i]); 
-		i++; 
-	} 
-	printf("\n");
-} 
 
-void Writter (void *parametro) 
+void *Writter (void *parametro) 
 { 
 	char line[MAXLINE];
 	strcpy(line,((linea *)parametro)->cadena);
-	printf("%s\n", line);
+	printf("%s", line);
+	return NULL;
+} 
+
+void *Upper (void *parametro) 
+{ 
+	char line[MAXLINE];
+	strcpy(line,((linea *)parametro)->cadena);
+	char newline[MAXLINE];
+	int i = 0;
+	while(line[i]!='\0') 
+	{ 
+		if (line[i]>=97 && line[i]<=122) newline[i]=line[i]-32;
+		else if (line[i]==-79) newline[i]=-111;
+		else newline[i]=line[i];
+		i++;
+	}
+	
+	pthread_t threadid; //esto es para mandar un thread a writer
+	linea *parameter=(linea *)malloc(sizeof(linea));
+	strcpy(parameter->cadena,newline);
+	pthread_create(&threadid, NULL, Writter, parameter);
+
+//	printf("%s",newline);
+	return NULL;
 } 
 
 void *spaces(void *parametro){
