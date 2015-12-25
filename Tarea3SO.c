@@ -16,7 +16,7 @@
 //IMPLEMENTACION DE LA COLA ********************************
 
 struct Node {
-	int data;
+	char *data;
 	struct Node* next;
 };
 // Two glboal variables to store address of front and rear nodes. 
@@ -24,7 +24,7 @@ struct Node* front = NULL;
 struct Node* rear = NULL;
 
 // To Enqueue an integer
-void Enqueue(int x) {
+void Enqueue(char *x) {
 	struct Node* temp = 
 		(struct Node*)malloc(sizeof(struct Node));
 	temp->data =x; 
@@ -53,7 +53,7 @@ void Dequeue() {
 	free(temp);
 }
 
-int Front() {
+char *Front() {
 	if(front == NULL) {
 		printf("Queue is empty\n");
 		return;
@@ -64,7 +64,7 @@ int Front() {
 void Print() {
 	struct Node* temp = front;
 	while(temp != NULL) {
-		printf("%d ",temp->data);
+		printf("%s ",temp->data);
 		temp = temp->next;
 	}
 	printf("\n");
@@ -96,6 +96,13 @@ void Upper (char texto[MAXLINE])
 		i++; 
 	} 
 	printf("\n");
+} 
+
+void Writter (void *parametro) 
+{ 
+	char line[MAXLINE];
+	strcpy(line,((linea *)parametro)->cadena);
+	printf("%s\n", line);
 } 
 
 void *spaces(void *parametro){
@@ -135,10 +142,10 @@ void *reader(void * nada){
 
 int main (int argc, char *argv[])
 {
-//	char str[MAXLINE] = "caca";
-//	Upper(str);
 	pthread_t threadid;
 	pthread_create(&threadid, NULL, reader, NULL);
 	
 	pthread_exit(NULL);
 }
+
+
