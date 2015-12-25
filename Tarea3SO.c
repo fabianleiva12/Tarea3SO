@@ -12,11 +12,14 @@
 
 #define MAXLINE 128
 
+typedef struct{//Estructura utilizada para almacenar los datos del arreglo a utilizar con threads.
+	char cadena[MAXLINE];
+}linea;
 
 //IMPLEMENTACION DE LA COLA ********************************
 
 struct Node {
-	char *data;
+	linea data;
 	struct Node* next;
 };
 // Two glboal variables to store address of front and rear nodes. 
@@ -24,7 +27,7 @@ struct Node* front = NULL;
 struct Node* rear = NULL;
 
 // To Enqueue an integer
-void Enqueue(char *x) {
+void Enqueue(linea x) {
 	struct Node* temp = 
 		(struct Node*)malloc(sizeof(struct Node));
 	temp->data =x; 
@@ -53,10 +56,10 @@ void Dequeue() {
 	free(temp);
 }
 
-char *Front() {
+linea Front() {
 	if(front == NULL) {
 		printf("Queue is empty\n");
-		return;
+		return front->data;
 	}
 	return front->data;
 }
@@ -64,7 +67,7 @@ char *Front() {
 void Print() {
 	struct Node* temp = front;
 	while(temp != NULL) {
-		printf("%s ",temp->data);
+		printf("%s ",temp->data.cadena);
 		temp = temp->next;
 	}
 	printf("\n");
@@ -72,19 +75,6 @@ void Print() {
 
 
 //FIN DE IMPLEMENTACION DE LA COLA
-
-
-typedef struct{//Estructura utilizada para almacenar los datos del arreglo a utilizar con threads.
-	char cadena[MAXLINE];
-}linea;
-
-
-void GetInput()
-{
-	//char str1[20];
-	//printf("Introduce cadena de caracteres: ");
-   	//scanf("%s", &str1);
-}
 
 void Upper (char texto[MAXLINE]) 
 { 
@@ -143,9 +133,9 @@ void *reader(void * nada){
 int main (int argc, char *argv[])
 {
 	pthread_t threadid;
-	pthread_create(&threadid, NULL, reader, NULL);
-	
+	pthread_create(&threadid, NULL, reader, NULL);	
 	pthread_exit(NULL);
+
 }
 
 
