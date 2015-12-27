@@ -168,36 +168,8 @@ void *reader(void * nada){
 
 int main (int argc, char *argv[])
 {
-	Initcola(&colaupper);
-	Initcola(&colawriter);
 	pthread_t threadid;
 	pthread_create(&threadid, NULL, reader, NULL);
 	pthread_exit(NULL);
-	
-	
-	
-/*	tcola C1,C2,C3;
-	Initcola(&C1);
-	Initcola(&C2);
-	Initcola(&C3);
-	
-	//elementos
-	linea asd1;	linea asd2;	linea asd3;	linea asd4;
-	strcpy(asd1.cadena,"dato1"); strcpy(asd2.cadena,"dato2"); strcpy(asd3.cadena,"dato3"); strcpy(asd4.cadena,"dato4");
-	
-	Enqueue(&C1, asd1);
-	Enqueue(&C1, asd2);
-	Enqueue(&C2, asd3);
-	Enqueue(&C3, asd4);
-	linea dasd=Dequeue(&C1);
-	printf("%s\n",dasd.cadena);
-
-	dasd=Dequeue(&C2);
-	printf("%s\n",dasd.cadena);
-	
-	Clear(&C1);
-	Clear(&C2);
-	Clear(&C3);*/
-	
 	return 0;
 }
