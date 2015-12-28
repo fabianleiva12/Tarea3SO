@@ -32,6 +32,10 @@ void Initcola (tcola *C){
 	C->elemento=(linea *)malloc(MAXSIZE*sizeof(linea));
 }
 
+int Size(tcola *C){
+	return C->len;
+}
+
 int Enqueue(tcola *C, linea elemento){
 	if (C->len==C->maxlen){
 		return -1; //no hay espacio disponible
@@ -144,15 +148,22 @@ void *reader(void * nada){
 	    pthread_attr_init(&attr);
 	    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 		pthread_mutex_init(&mutex, NULL); // Inicializamos el mutex
+		pthread_t threadid;
 
-        //aqui mandar la linea a un thread que la modifique
-        strcpy(envios.cadena,line);
-        Enqueue(&colaspaces, envios);
-        
-        pthread_t threadid;
-		pthread_create(&threadid, NULL, spaces, NULL);
-
-		pthread_join(threadid, &ret);
+		if (Size(&colaspaces)<10){
+			//Se puede encolar y trabajar con la linea directamente
+	        strcpy(envios.cadena,line);
+	        Enqueue(&colaspaces, envios);
+			pthread_create(&threadid, NULL, spaces, NULL);
+			pthread_join(threadid, &ret);	
+		}
+		else{
+			//Se encola una vez que la linea actual se proceso y se desencolo en las funciones siguientes.
+			pthread_create(&threadid, NULL, spaces, NULL);
+			pthread_join(threadid, &ret);//Esperamos que termine el hilo antes de encolar de nuevo.
+			strcpy(envios.cadena,line);
+	        Enqueue(&colaspaces, envios);
+		}
 	    pthread_attr_destroy(&attr); // Borramos de la memoria los atributos
 
 	    /* Antes de llamar a esta función TODOS los threads que usen el mutex tienen que estar cerrados. */
