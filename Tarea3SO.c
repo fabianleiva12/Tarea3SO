@@ -51,19 +51,30 @@ int Enqueue(tcola *C, linea elemento){
 linea Dequeue(tcola *C){
 	linea aux;
 	if (C->len > 0){
-		aux=C->elemento[C->pos_primero];
 		if (C->pos_primero==C->maxlen) C->pos_primero=0;
+		aux=C->elemento[C->pos_primero];
 		C->pos_primero++;
 		C->len--;
 		return aux;
 	}
-	return aux;
+	//linea problema;
+	return Dequeue(C);
 }
 
 void Clear(tcola *C){
 	C->len=C->pos_primero=C->pos_ultimo=0;
 	C->maxlen=MAXSIZE;
 	free((void *) C->elemento);
+}
+
+void Printcola(tcola *C){
+	int i;
+	linea aux;
+	for (i=0; i < 10; i++){
+		aux=C->elemento[i];
+		printf("elemento %d: %s", i, aux.cadena);
+	}
+	printf("\nlen: %d-----pos_primero: %d-----pos_ultimo: %d\n",C->len, C->pos_primero, C->pos_ultimo);
 }
 // fin funciones colas
 
@@ -77,6 +88,7 @@ void *Writter (void * nada) {
 	recepcion=Dequeue(&colawriter);
 	strcpy(line,recepcion.cadena);
 	printf("%s", line);
+	//cuando ya se haya impreso todo
 	//Clear(&colaspaces); Clear(&colaupper); Clear(&colawriter);
 	return NULL;
 } 
@@ -84,10 +96,11 @@ void *Writter (void * nada) {
 void *Upper (void * nada){ 
 	char line[MAXLINE], newline[MAXLINE];
 	linea recepcion, envio;
+    
 	recepcion=Dequeue(&colaupper);
 	strcpy(line,recepcion.cadena);
 	int i = 0;
-	while(line[i]!='\0') 
+	while(line[i]!='\0')
 	{ 
 		if (line[i]>=97 && line[i]<=122) newline[i]=line[i]-32;
 		else if (line[i]==-79) newline[i]=-111;
@@ -97,14 +110,8 @@ void *Upper (void * nada){
     strcpy(envio.cadena,newline);
     Enqueue(&colawriter, envio);
     
-    //esto es para mandar un thread a writer
-//    pthread_mutex_init(&mutex, NULL);
 	pthread_t threadid;
 	pthread_create(&threadid, NULL, Writter, NULL);
-	
-//	pthread_join(threadid, &ret);
-//	pthread_mutex_destroy(&mutex);
-//	printf("%s",newline);
 	return NULL;
 } 
 
@@ -112,7 +119,13 @@ void *spaces(void * nada){
 	int i;
 	char line[MAXLINE], newline[MAXLINE];
 	linea recepcion, envio;
+    
+//    printf("\n\n colaspaces antes de dequeue:\n");
+//    Printcola(&colaspaces);
+    
 	recepcion=Dequeue(&colaspaces);
+	
+    
 	strcpy(line,recepcion.cadena);
 	for(i=0;i<=strlen(line);i++){
 		if(line[i]==' ') newline[i]='*';
@@ -120,14 +133,9 @@ void *spaces(void * nada){
 	}
     strcpy(envio.cadena,newline);
     Enqueue(&colaupper, envio);
-	//enviar nuevalinea a un thread upper
-//	pthread_mutex_init(&mutex, NULL);
+    
 	pthread_t threadid;
 	pthread_create(&threadid, NULL, Upper, NULL);
-	
-//	pthread_join(threadid, &ret);
-//	pthread_mutex_destroy(&mutex); // Desinicializa el mutex
-//	printf("%s", newline);
 	return NULL;
 }
 
@@ -149,11 +157,11 @@ void *reader(void * nada){
 	    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 		pthread_mutex_init(&mutex, NULL); // Inicializamos el mutex
 		pthread_t threadid;
-
 	    strcpy(envios.cadena,line);
 	    Enqueue(&colaspaces, envios);
 		pthread_create(&threadid, NULL, spaces, NULL);
-		pthread_join(threadid, &ret);	
+		pthread_join(threadid, &ret);
+		
 	    pthread_attr_destroy(&attr); // Borramos de la memoria los atributos
 
 	    /* Antes de llamar a esta función TODOS los threads que usen el mutex tienen que estar cerrados. */
