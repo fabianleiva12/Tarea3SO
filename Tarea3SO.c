@@ -81,6 +81,7 @@ void Printcola(tcola *C){
 void* ret;
 pthread_mutex_t mutex; // MUTEX Global para que todos puedan acceder al mutex
 tcola colaspaces,colaupper,colawriter; //colas que se usaran
+int nlineas=0;
 
 void *Writter (void * nada) { 
 	char line[MAXLINE];
@@ -88,9 +89,9 @@ void *Writter (void * nada) {
 	recepcion=Dequeue(&colawriter);
 	strcpy(line,recepcion.cadena);
 	printf("%s", line);
-	//cuando ya se haya impreso todo
-	//linea flag;
+	nlineas++;
 	if (strcmp(line,"")==0){
+		printf("numero total de lineas= %d",nlineas-1);
 		Clear(&colaspaces); Clear(&colaupper); Clear(&colawriter);
 	}
 	return NULL;
