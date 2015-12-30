@@ -89,7 +89,10 @@ void *Writter (void * nada) {
 	strcpy(line,recepcion.cadena);
 	printf("%s", line);
 	//cuando ya se haya impreso todo
-	//Clear(&colaspaces); Clear(&colaupper); Clear(&colawriter);
+	//linea flag;
+	if (strcmp(line,"")==0){
+		Clear(&colaspaces); Clear(&colaupper); Clear(&colawriter);
+	}
 	return NULL;
 } 
 
@@ -166,9 +169,13 @@ void *reader(void * nada){
 
 	    /* Antes de llamar a esta función TODOS los threads que usen el mutex tienen que estar cerrados. */
 		pthread_mutex_destroy(&mutex); // Desinicializa el mutex
-
     }
-    pthread_exit(NULL);
+    linea flag;
+	strcpy(flag.cadena,"");
+    Enqueue(&colaspaces, flag);
+	pthread_t threadid;
+	pthread_create(&threadid, NULL, spaces, NULL);
+    //pthread_exit(NULL);
 //        spaces(line);
 //        printf("%s", linea);
 	fclose(archivo);
@@ -182,3 +189,4 @@ int main (int argc, char *argv[])
 	pthread_exit(NULL);
 	return 0;
 }
+
